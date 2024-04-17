@@ -27,6 +27,13 @@ func New(log *slog.Logger,
 	}
 }
 
+// MustRun Must run gRPC server and panic if error occurs.
+func (a *App) MustRun() {
+	if err := a.Run(); err != nil {
+		panic(err)
+	}
+}
+
 func (a *App) Run() error {
 	const op = "grpcapp.App.Run"
 
