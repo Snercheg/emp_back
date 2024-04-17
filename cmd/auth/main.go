@@ -1,6 +1,7 @@
 package main
 
 import (
+	"EMP_Back/internal/app"
 	"EMP_Back/internal/config"
 	"fmt"
 	"log/slog"
@@ -17,10 +18,11 @@ func main() {
 	// TODO: Change config delete console
 	cfg := config.MustLoadConfig()
 	fmt.Println(cfg)
+
 	// TODO: Customize logger
 
 	log := setupLogger(cfg.Env)
-	log.Info("Starting gRPC server",
+	log.Info("Starting application",
 		slog.String("env", cfg.Env),
 	)
 
@@ -28,10 +30,10 @@ func main() {
 	log.Error("Error message")
 	log.Warn("Warning message")
 
-	// TODO: Initialize application
+	application := app.New(log, cfg.GRPC.Port, cfg.StoragePath, cfg.TokenTTL)
+	application.GRPCSrv.MustRun()
 
 	// TODO: Run gRPC server application
-
 }
 
 func setupLogger(env string) *slog.Logger {
