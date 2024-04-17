@@ -14,10 +14,10 @@ const (
 )
 
 func main() {
-	// TODO: initialize config object
+	// TODO: Change config delete console
 	cfg := config.MustLoadConfig()
 	fmt.Println(cfg)
-	// TODO: Initialize logger
+	// TODO: Customize logger
 
 	log := setupLogger(cfg.Env)
 	log.Info("Starting gRPC server",
