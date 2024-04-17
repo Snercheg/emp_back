@@ -1,0 +1,10 @@
+version: '3'
+
+tasks:
+  test:
+    aliases:
+      - test
+    desc: "test"
+    cmds:
+    - go run cmd/auth/main.go --config=./config/local.yaml
+
