@@ -1,7 +1,8 @@
 package models
 
-type PlantFarm struct {
-	Id          int    `json:"id"`
-	Name        string `json:"name"`
-	Description string `json:"description"`
+type PlantFamily struct {
+	ID               int    `json:"id"`
+	Name             string `json:"name"`
+	Description      string `json:"description"`
+	RecommendationId int    `json:"recommendation_id"`
 }
