@@ -18,7 +18,6 @@ type Storage struct {
 
 func New() (*Storage, error) {
 	op := "storage.postgres.New"
-
 	db, err := sql.Open("pgx", os.Getenv("DATABASE_URL"))
 	if err != nil {
 		return nil, fmt.Errorf("%s: %v", op, err)
@@ -35,12 +34,12 @@ func New() (*Storage, error) {
 func (s *Storage) SaveUser(ctx context.Context, username string, email string, passHash []byte) (int64, error) {
 	op := "storage.postgres.SaveUser"
 
-	_, err := s.db.Prepare("INSERT INTO users (username, email, pass_hash) VALUES ($1, $2, $3) RETURNING id")
+	stmt, err := s.db.Prepare("INSERT INTO users (username, email, pass_hash) VALUES ($1, $2, $3) RETURNING id")
 	if err != nil {
 		return 0, fmt.Errorf("%s: %v", op, err)
 	}
 
-	res, err := s.db.ExecContext(ctx, username, email, passHash)
+	res, err := stmt.ExecContext(ctx, username, email, passHash)
 	if err != nil {
 		var pgErr *pgconn.PgError
 		if errors.As(err, &pgErr) && pgErr.Code == "23505" { // duplicate key
@@ -91,11 +90,11 @@ func (s *Storage) IsAdmin(ctx context.Context, id int64) (bool, error) {
 // SaveRecommendation saves a new plant recommendation.
 func (s *Storage) SaveRecommendation(ctx context.Context, r *models.Recommendation) (int64, error) {
 	op := "storage.postgres.SaveRecommendation"
-	_, err := s.db.Prepare("INSERT INTO recommendations (title, temperature_min, temperature_max, humidity_min, humidity_max, illumination_min, illumination_max, description) VALUES ($1, $2, $3, $4, $5, $6, $7, $8) RETURNING id")
+	stmt, err := s.db.Prepare("INSERT INTO recommendations (title, temperature_min, temperature_max, humidity_min, humidity_max, illumination_min, illumination_max, description) VALUES ($1, $2, $3, $4, $5, $6, $7, $8) RETURNING id")
 	if err != nil {
 		return 0, fmt.Errorf("%s: %v", op, err)
 	}
-	res, err := s.db.ExecContext(ctx, r.Title, r.TemperatureMin, r.TemperatureMax, r.HumidityMin, r.HumidityMax, r.IlluminationMin, r.IlluminationMax, r.Description)
+	res, err := stmt.ExecContext(ctx, r.Title, r.TemperatureMin, r.TemperatureMax, r.HumidityMin, r.HumidityMax, r.IlluminationMin, r.IlluminationMax, r.Description)
 	if err != nil {
 		var pgErr *pgconn.PgError
 		if errors.As(err, &pgErr) && pgErr.Code == "23505" { // duplicate key
@@ -129,19 +128,20 @@ func (s *Storage) Recommendation(ctx context.Context, id int64) (models.Recommen
 // SavePlantFamily saves a new plant family.
 func (s *Storage) SavePlantFamily(ctx context.Context, p *models.PlantFamily, recommendationId int64) (int64, error) {
 	op := "storage.postgres.SavePlantFamily"
-	_, err := s.db.Prepare("INSERT INTO plant_families (name, description, recommendation_id) VALUES ($1, $2, $3) RETURNING id")
-	if err != nil {
-		return 0, fmt.Errorf("%s: %v", op, err)
-	}
+
 	// check if recommendation exists in recommendation table.
 	row := s.db.QueryRowContext(ctx, "SELECT id FROM recommendations WHERE id = $1", recommendationId)
 
-	err = row.Scan(&recommendationId)
+	err := row.Scan(&recommendationId)
+	if err != nil {
+		return 0, fmt.Errorf("%s: %v", op, err)
+	}
+	stmt, err := s.db.Prepare("INSERT INTO plant_families (name, description, recommendation_id) VALUES ($1, $2, $3) RETURNING id")
 	if err != nil {
 		return 0, fmt.Errorf("%s: %v", op, err)
 	}
 
-	res, err := s.db.ExecContext(ctx, p.Name, p.Description, recommendationId)
+	res, err := stmt.ExecContext(ctx, p.Name, p.Description, recommendationId)
 	if err != nil {
 		var pgErr *pgconn.PgError
 		if errors.As(err, &pgErr) && pgErr.Code == "23505" { // duplicate key
@@ -185,4 +185,113 @@ func (s *Storage) PlantFamilyByName(ctx context.Context, name string) (models.Pl
 		return p, fmt.Errorf("%s: %v", op, err)
 	}
 	return p, nil
+}
+
+// SaveModule saves a new module.
+func (s *Storage) SaveModule(ctx context.Context, m *models.Module) (int64, error) {
+	op := "storage.postgres.SaveModule"
+	// check if setting exists in setting table.
+	row := s.db.QueryRowContext(ctx, "SELECT id FROM settings WHERE id = $1", m.SettingId)
+	var settingId int64
+	err := row.Scan(&settingId)
+	if err != nil {
+		return 0, fmt.Errorf("%s: %v", op, err)
+	}
+	// check if plant family exists in plant_families table.
+	row = s.db.QueryRowContext(ctx, "SELECT id FROM plant_families WHERE id = $1", m.PlantFamilyID)
+	var plantFamilyId int64
+	err = row.Scan(&plantFamilyId)
+	if err != nil {
+		return 0, fmt.Errorf("%s: %v", op, err)
+	}
+	stmt, err := s.db.Prepare("INSERT INTO modules (name, setting_id, plant_family_id ) VALUES ($1, $2, $3) RETURNING id")
+	if err != nil {
+		return 0, fmt.Errorf("%s: %v", op, err)
+	}
+	res, err := stmt.ExecContext(ctx, m.Name, settingId, plantFamilyId)
+	if err != nil {
+		var pgErr *pgconn.PgError
+		if errors.As(err, &pgErr) && pgErr.Code == "23505" { // duplicate key
+			return 0, fmt.Errorf("%s: %v", op, err, storage.ErrModuleExist)
+		}
+		return 0, fmt.Errorf("%s: %v", op, err)
+	}
+	// Return the ID of the inserted row.
+	id, err := res.LastInsertId()
+	if err != nil {
+		return 0, fmt.Errorf("%s: %v", op, err)
+	}
+	return id, nil
+}
+
+// Module returns a module by ID.
+func (s *Storage) Module(ctx context.Context, id int64) (models.Module, error) {
+	op := "storage.postgres.Module"
+	row := s.db.QueryRowContext(ctx, "SELECT id, name, setting_id, plant_family_id FROM modules WHERE id = $1", id)
+	var m models.Module
+	err := row.Scan(&m.ID, &m.Name, &m.SettingId, &m.PlantFamilyID)
+	if err != nil {
+		if errors.Is(err, sql.ErrNoRows) {
+			return m, storage.ErrModuleNotFound
+		}
+		return m, fmt.Errorf("%s: %v", op, err)
+	}
+	return m, nil
+}
+
+// SaveUserModule saves a new user module.
+func (s *Storage) SaveUserModule(ctx context.Context, m *models.UserModule) (int64, error) {
+	op := "storage.postgres.SaveUserModule"
+	stmt, err := s.db.Prepare("INSERT INTO user_modules (user_id, module_id) VALUES ($1, $2) RETURNING id")
+	if err != nil {
+		return 0, fmt.Errorf("%s: %v", op, err)
+	}
+
+	res, err := stmt.ExecContext(ctx, m.UserID, m.ModuleID)
+	if err != nil {
+		var pgErr *pgconn.PgError
+		if errors.As(err, &pgErr) && pgErr.Code == "23505" { // duplicate key
+			return 0, fmt.Errorf("%s: %v", op, err, storage.ErrUserModuleExist)
+		}
+		return 0, fmt.Errorf("%s: %v", op, err)
+	}
+	// Return the ID of the inserted row.
+	id, err := res.LastInsertId()
+	if err != nil {
+		return 0, fmt.Errorf("%s: %v", op, err)
+	}
+	return id, nil
+}
+
+// UserModule returns a user module by ID.
+func (s *Storage) UserModule(ctx context.Context, id int64) (models.UserModule, error) {
+	op := "storage.postgres.UserModule"
+	row := s.db.QueryRowContext(ctx, "SELECT id, user_id, module_id FROM user_modules WHERE id = $1", id)
+	var m models.UserModule
+	err := row.Scan(&m.ID, &m.UserID, &m.ModuleID)
+	if err != nil {
+		if errors.Is(err, sql.ErrNoRows) {
+			return m, storage.ErrUserModuleNotFound
+		}
+		return m, fmt.Errorf("%s: %v", op, err)
+	}
+	return m, nil
+}
+
+// DeleteUserModule deletes a user module by ID.
+func (s *Storage) DeleteUserModule(ctx context.Context, id int64) error {
+	op := "storage.postgres.DeleteUserModule"
+	stmt, err := s.db.Prepare("DELETE FROM user_modules WHERE id = $1")
+	if err != nil {
+		return fmt.Errorf("%s: %v", op, err)
+	}
+	_, err = stmt.ExecContext(ctx, id)
+	if err != nil {
+		var pgErr *pgconn.PgError
+		if errors.As(err, &pgErr) && pgErr.Code == "23503" { // foreign key
+			return fmt.Errorf("%s: %v", op, err, storage.ErrUserModuleNotFound)
+		}
+		return fmt.Errorf("%s: %v", op, err)
+	}
+	return nil
 }
