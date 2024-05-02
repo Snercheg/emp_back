@@ -1,10 +1,11 @@
 package models
 
-type module struct {
-	Id        int    `json:"id"`
-	Name      string `json:"name"`
-	ApiKey    string `json:"apikey"`
-	SettingId int    `json:"setting_id"`
-	TypeId    int    `json:"type_id"`
-	Status    string `json:"status"`
+type Module struct {
+	ID            int          `json:"id"`
+	Name          string       `json:"name"`
+	SettingID     int          `json:"setting_id"`
+	Setting       *Setting     `json:"setting"`
+	PlantFamilyID int          `json:"plant_family_id"`
+	PlantFamily   *PlantFamily `json:"plant_family"`
+	Status        string       `json:"status"`
 }
