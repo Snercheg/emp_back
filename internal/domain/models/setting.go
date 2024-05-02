@@ -1,7 +1,7 @@
 package models
 
-type setting struct {
-	Id              int     `json:"id"`
+type Setting struct {
+	ID              int     `json:"id"`
 	Name            string  `json:"name"`
 	TemperatureMin  float64 `json:"temperature_min"`
 	TemperatureMax  float64 `json:"temperature_max"`
