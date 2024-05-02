@@ -9,5 +9,6 @@ type User struct {
 	PassHash  []byte
 	Status    string
 	RoleId    int64
+	Role      *Role
 	CreatedAt time.Duration
 }
