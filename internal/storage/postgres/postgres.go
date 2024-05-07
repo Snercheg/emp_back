@@ -125,6 +125,24 @@ func (s *Storage) Recommendation(ctx context.Context, id int64) (models.Recommen
 	return r, nil
 }
 
+// UpdateRecommendation updates a recommendation.
+func (s *Storage) UpdateRecommendation(ctx context.Context, r *models.Recommendation) error {
+	op := "storage.postgres.UpdateRecommendation"
+	stmt, err := s.db.Prepare("UPDATE recommendations SET title = $1, temperature_min = $2, temperature_max = $3, humidity_min = $4, humidity_max = $5, illumination_min = $6, illumination_max = $7, description = $8 WHERE id = $9")
+	if err != nil {
+		return fmt.Errorf("%s: %v", op, err)
+	}
+	_, err = stmt.ExecContext(ctx, r.Title, r.TemperatureMin, r.TemperatureMax, r.HumidityMin, r.HumidityMax, r.IlluminationMin, r.IlluminationMax, r.Description, r.ID)
+	if err != nil {
+		var pgErr *pgconn.PgError
+		if errors.As(err, &pgErr) && pgErr.Code == "23504" { // not-null violation
+			return fmt.Errorf("%s: %v", op, err, storage.ErrRecommendationCannotBeChanged)
+		}
+		return fmt.Errorf("%s: %v", op, err)
+	}
+	return nil
+}
+
 // SavePlantFamily saves a new plant family.
 func (s *Storage) SavePlantFamily(ctx context.Context, p *models.PlantFamily, recommendationId int64) (int64, error) {
 	op := "storage.postgres.SavePlantFamily"
@@ -172,6 +190,24 @@ func (s *Storage) PlantFamily(ctx context.Context, id int64) (models.PlantFamily
 	return p, nil
 }
 
+// UpdatePlantFamily updates a plant family.
+func (s *Storage) UpdatePlantFamily(ctx context.Context, p *models.PlantFamily) error {
+	op := "storage.postgres.UpdatePlantFamily"
+	stmt, err := s.db.Prepare("UPDATE plant_families SET name = $1, description = $2, recommendation_id = $3 WHERE id = $4")
+	if err != nil {
+		return fmt.Errorf("%s: %v", op, err)
+	}
+	_, err = stmt.ExecContext(ctx, p.Name, p.Description, p.RecommendationId, p.ID)
+	if err != nil {
+		var pgErr *pgconn.PgError
+		if errors.As(err, &pgErr) && pgErr.Code == "23504" { // not-null violation
+			return fmt.Errorf("%s: %v", op, err, storage.ErrPlantFamilyCannotBeChanged)
+		}
+		return fmt.Errorf("%s: %v", op, err)
+	}
+	return nil
+}
+
 // PlantFamilyByName PlantFamily returns a plant family by name.
 func (s *Storage) PlantFamilyByName(ctx context.Context, name string) (models.PlantFamily, error) {
 	op := "storage.postgres.PlantFamilyByName"
@@ -191,7 +227,7 @@ func (s *Storage) PlantFamilyByName(ctx context.Context, name string) (models.Pl
 func (s *Storage) SaveModule(ctx context.Context, m *models.Module) (int64, error) {
 	op := "storage.postgres.SaveModule"
 	// check if setting exists in setting table.
-	row := s.db.QueryRowContext(ctx, "SELECT id FROM settings WHERE id = $1", m.SettingId)
+	row := s.db.QueryRowContext(ctx, "SELECT id FROM settings WHERE id = $1", m.SettingID)
 	var settingId int64
 	err := row.Scan(&settingId)
 	if err != nil {
@@ -229,7 +265,7 @@ func (s *Storage) Module(ctx context.Context, id int64) (models.Module, error) {
 	op := "storage.postgres.Module"
 	row := s.db.QueryRowContext(ctx, "SELECT id, name, setting_id, plant_family_id FROM modules WHERE id = $1", id)
 	var m models.Module
-	err := row.Scan(&m.ID, &m.Name, &m.SettingId, &m.PlantFamilyID)
+	err := row.Scan(&m.ID, &m.Name, &m.SettingID, &m.PlantFamilyID)
 	if err != nil {
 		if errors.Is(err, sql.ErrNoRows) {
 			return m, storage.ErrModuleNotFound
@@ -290,6 +326,62 @@ func (s *Storage) DeleteUserModule(ctx context.Context, id int64) error {
 		var pgErr *pgconn.PgError
 		if errors.As(err, &pgErr) && pgErr.Code == "23503" { // foreign key
 			return fmt.Errorf("%s: %v", op, err, storage.ErrUserModuleNotFound)
+		}
+		return fmt.Errorf("%s: %v", op, err)
+	}
+	return nil
+}
+
+// SaveSetting saves a new setting.
+func (s *Storage) SaveSetting(ctx context.Context, set *models.Setting) (int64, error) {
+	op := "storage.postgres.SaveSetting"
+	stmt, err := s.db.Prepare("INSERT INTO settings (name, temperature_min, temperature_max, humidity_min, humidity_max, illumination_min, illumination_max) VALUES ($1, $2, $3, $4, $5, $6, $7) RETURNING id")
+	if err != nil {
+		return 0, fmt.Errorf("%s: %v", op, err)
+	}
+	res, err := stmt.ExecContext(ctx, set.Name, set.TemperatureMin, set.TemperatureMax, set.HumidityMin, set.HumidityMax, set.IlluminationMin, set.IlluminationMax)
+	if err != nil {
+		var pgErr *pgconn.PgError
+		if errors.As(err, &pgErr) && pgErr.Code == "23505" { // duplicate key
+			return 0, fmt.Errorf("%s: %v", op, err, storage.ErrSettingExist)
+		}
+		return 0, fmt.Errorf("%s: %v", op, err)
+	}
+	// Return the ID of the inserted row.
+	id, err := res.LastInsertId()
+	if err != nil {
+		return 0, fmt.Errorf("%s: %v", op, err)
+	}
+	return id, nil
+}
+
+// Setting returns a setting by ID.
+func (s *Storage) Setting(ctx context.Context, id int64) (models.Setting, error) {
+	op := "storage.postgres.Setting"
+	row := s.db.QueryRowContext(ctx, "SELECT id, name, temperature_min, temperature_max, humidity_min, humidity_max, illumination_min, illumination_max FROM settings WHERE id = $1", id)
+	var set models.Setting
+	err := row.Scan(&set.ID, &set.Name, &set.TemperatureMin, &set.TemperatureMax, &set.HumidityMin, &set.HumidityMax, &set.IlluminationMin, &set.IlluminationMax)
+	if err != nil {
+		if errors.Is(err, sql.ErrNoRows) {
+			return set, storage.ErrSettingNotFound
+		}
+		return set, fmt.Errorf("%set: %v", op, err)
+	}
+	return set, nil
+}
+
+// UpdateSetting updates a setting.
+func (s *Storage) UpdateSetting(ctx context.Context, set *models.Setting) error {
+	op := "storage.postgres.UpdateSetting"
+	stmt, err := s.db.Prepare("UPDATE settings SET name = $1, temperature_min = $2, temperature_max = $3, humidity_min = $4, humidity_max = $5, illumination_min = $6, illumination_max = $7 WHERE id = $8")
+	if err != nil {
+		return fmt.Errorf("%s: %v", op, err)
+	}
+	_, err = stmt.ExecContext(ctx, set.Name, set.TemperatureMin, set.TemperatureMax, set.HumidityMin, set.HumidityMax, set.IlluminationMin, set.IlluminationMax, set.ID)
+	if err != nil {
+		var pgErr *pgconn.PgError
+		if errors.As(err, &pgErr) && pgErr.Code == "23504" { // not null
+			return fmt.Errorf("%s: %v", op, storage.ErrSettingCannotBeChanged)
 		}
 		return fmt.Errorf("%s: %v", op, err)
 	}
