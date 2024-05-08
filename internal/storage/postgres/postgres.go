@@ -154,12 +154,12 @@ func (s *Storage) SavePlantFamily(ctx context.Context, p *models.PlantFamily, re
 	if err != nil {
 		return 0, fmt.Errorf("%s: %v", op, err)
 	}
-	stmt, err := s.db.Prepare("INSERT INTO plant_families (name, description, recommendation_id) VALUES ($1, $2, $3) RETURNING id")
+	stmt, err := s.db.Prepare("INSERT INTO plant_families (name, description, recommendation_id, picture_url) VALUES ($1, $2, $3) RETURNING id")
 	if err != nil {
 		return 0, fmt.Errorf("%s: %v", op, err)
 	}
 
-	res, err := stmt.ExecContext(ctx, p.Name, p.Description, recommendationId)
+	res, err := stmt.ExecContext(ctx, p.Name, p.Description, p.RecommendationId, p.PictureUrl)
 	if err != nil {
 		var pgErr *pgconn.PgError
 		if errors.As(err, &pgErr) && pgErr.Code == "23505" { // duplicate key
@@ -178,9 +178,9 @@ func (s *Storage) SavePlantFamily(ctx context.Context, p *models.PlantFamily, re
 // PlantFamily returns a plant family by ID.
 func (s *Storage) PlantFamily(ctx context.Context, id int64) (models.PlantFamily, error) {
 	op := "storage.postgres.PlantFamily"
-	row := s.db.QueryRowContext(ctx, "SELECT id, name, description, recommendation_id FROM plant_families WHERE id = $1", id)
+	row := s.db.QueryRowContext(ctx, "SELECT id, name, description, recommendation_id, picture_url FROM plant_families WHERE id = $1", id)
 	var p models.PlantFamily
-	err := row.Scan(&p.ID, &p.Name, &p.Description, &p.RecommendationId)
+	err := row.Scan(&p.ID, &p.Name, &p.Description, &p.RecommendationId, &p.PictureUrl)
 	if err != nil {
 		if errors.Is(err, sql.ErrNoRows) {
 			return p, storage.ErrPlantFamilyNotFound
