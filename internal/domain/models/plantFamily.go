@@ -6,4 +6,5 @@ type PlantFamily struct {
 	Description      string          `json:"description"`
 	RecommendationId int             `json:"recommendation_id"`
 	Recommendation   *Recommendation `json:"recommendation"`
+	PictureUrl       string          `json:"picture_url"`
 }
