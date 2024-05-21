@@ -6,17 +6,17 @@ import (
 	"time"
 )
 
-func NewToken(user models.User, app models.App, duration time.Duration) (string, error) {
+func NewToken(user models.User, duration time.Duration) (string, error) {
+	salt := "EMP_Back_Token"
 	token := jwt.New(jwt.SigningMethodHS256)
 
 	claims := token.Claims.(jwt.MapClaims)
 	claims["user_id"] = user.ID
 	claims["user_email"] = user.Email
-	claims["user_role"] = user.Role.Name
+	claims["user_role"] = user.IsAdmin
 	claims["exp"] = time.Now().Add(duration).Unix()
-	claims["app_id"] = app.ID
 
-	tokenString, err := token.SignedString([]byte(app.Secret))
+	tokenString, err := token.SignedString([]byte(salt))
 	if err != nil {
 		return "", err
 	}
