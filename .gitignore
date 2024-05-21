@@ -1,2 +1,4 @@
 /gen/go/sso/sso.pb.go
 /gen/go/sso/sso_grpc.pb.go
+.idea
+.env
