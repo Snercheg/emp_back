@@ -16,7 +16,7 @@ func NewPlantFamilyPostgres(db *sql.DB) *PlantFamilyPostgres {
 	return &PlantFamilyPostgres{DB: db}
 }
 
-func (p *PlantFamilyPostgres) SavePlantFamily(plantFamily *models.PlantFamily) (int64, error) {
+func (p *PlantFamilyPostgres) SavePlantFamily(plantFamily models.PlantFamily) (int64, error) {
 	op := "storage.repository.SaveUser"
 	stmt, err := p.DB.Prepare(fmt.Sprintf("INSERT INTO plant_family (name, recommendation_id, picture_url, description) VALUES ($1, $2, $3, $4) RETURNING id", plantFamily.Name, plantFamily.RecommendationId, plantFamily.PictureUrl, plantFamily.Description))
 	if err != nil {
@@ -55,7 +55,7 @@ func (p *PlantFamilyPostgres) GetPlantFamily(id int64) (*models.PlantFamily, err
 	return plantFamily, nil
 }
 
-func (p *PlantFamilyPostgres) GetPlantFamilies() ([]*models.PlantFamily, error) {
+func (p *PlantFamilyPostgres) GetPlantFamilies() ([]models.PlantFamily, error) {
 	op := "storage.repository.GetPlantFamilies"
 	stmt, err := p.DB.Prepare("SELECT id, name, recommendation_id, picture_url, description FROM plant_family")
 	if err != nil {
@@ -65,9 +65,9 @@ func (p *PlantFamilyPostgres) GetPlantFamilies() ([]*models.PlantFamily, error) 
 	if err != nil {
 		return nil, fmt.Errorf("%s: %v", op, err)
 	}
-	var plantFamilies []*models.PlantFamily
+	var plantFamilies []models.PlantFamily
 	for rows.Next() {
-		plantFamily := &models.PlantFamily{}
+		plantFamily := models.PlantFamily{}
 		err = rows.Scan(&plantFamily.ID, &plantFamily.Name, &plantFamily.RecommendationId, &plantFamily.PictureUrl, &plantFamily.Description)
 		if err != nil {
 			return nil, fmt.Errorf("%s: %v", op, err)
@@ -94,9 +94,9 @@ func (p *PlantFamilyPostgres) DeletePlantFamily(id int64) error {
 	return nil
 }
 
-func (p *PlantFamilyPostgres) UpdatePlantFamily(plantFamily *models.PlantFamily) error {
+func (p *PlantFamilyPostgres) UpdatePlantFamily(id int64, plantFamily models.PlantFamily) error {
 	op := "storage.repository.UpdatePlantFamily"
-	stmt, err := p.DB.Prepare(fmt.Sprintf("UPDATE plant_family SET name = $1, recommendation_id = $2, picture_url = $3, description = $4 WHERE id = $5", plantFamily.Name, plantFamily.RecommendationId, plantFamily.PictureUrl, plantFamily.Description, plantFamily.ID))
+	stmt, err := p.DB.Prepare(fmt.Sprintf("UPDATE plant_family SET name = $1, recommendation_id = $2, picture_url = $3, description = $4 WHERE id = $5", plantFamily.Name, plantFamily.RecommendationId, plantFamily.PictureUrl, plantFamily.Description, id))
 	if err != nil {
 		var pgErr *pgconn.PgError
 		if errors.As(err, &pgErr) && pgErr.Code == "23504" { // not-null violation
