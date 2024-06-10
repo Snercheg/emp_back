@@ -8,6 +8,7 @@ import (
 )
 
 type Config struct {
+	// TODO: Refact
 	Env string `json:"env" yaml:"env" mapstructure:"env" env-default:"local"`
 	//StoragePath string        `json:"storagePath" yaml:"storagePath" mapstructure:"storagePath" env-required:"true"`
 	TokenTTL time.Duration `json:"token_ttl" yaml:"token_ttl" mapstructure:"token_ttl" env-required:"true"`
@@ -24,15 +25,6 @@ type ServerConfig struct {
 	Timeout time.Duration `json:"timeout" yaml:"timeout" mapstructure:"timeout" env-required:"true"`
 }
 
-/*
-	type Database struct {
-		Host     string `json:"host" yaml:"host" mapstructure:"host" env-required:"true"`
-		Port     string `json:"port" yaml:"port" mapstructure:"port" env-required:"true"`
-		User     string `json:"user" yaml:"user" mapstructure:"user" env-required:"true"`
-		Password string `json:"password" yaml:"password" mapstructure:"password" env-required:"true"`
-		Name     string `json:"name" yaml:"name" mapstructure:"name" env-required:"true"`
-	}
-*/
 func MustLoadConfig() Config {
 	path := fetchConfigPath(os.Getenv("CONFIG_PATH"))
 	if path == "" {

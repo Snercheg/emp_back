@@ -12,7 +12,6 @@ import (
 func main() {
 
 	var host, port, name, user, password, migrationPath, migrationTable string
-
 	flag.StringVar(&host, "host", "127.0.0.1", "Host of the database")
 	flag.StringVar(&port, "port", "5432", "Port of the database")
 	flag.StringVar(&name, "name", "postgres", "Name of the database")
