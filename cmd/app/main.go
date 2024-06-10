@@ -4,10 +4,13 @@ import (
 	"EMP_Back/internal/app"
 	"EMP_Back/internal/config"
 	"fmt"
+	"github.com/joho/godotenv"
+	"golang.org/x/net/context"
 	"log/slog"
 	"os"
 	"os/signal"
 	"syscall"
+	"time"
 )
 
 const (
@@ -20,8 +23,10 @@ func main() {
 	// TODO: Change config delete console
 	cfg := config.MustLoadConfig()
 	fmt.Println(cfg)
-
 	// TODO: Customize logger
+	if err := godotenv.Load(); err != nil {
+		slog.Error("Error loading.env file", slog.String("error", err.Error()))
+	}
 
 	log := setupLogger(cfg.Env)
 	log.Info("Starting application",
@@ -32,17 +37,26 @@ func main() {
 	log.Error("Error message")
 	log.Warn("Warning message")
 
-	application := app.New(log, cfg.GRPC.Port, cfg.StoragePath, cfg.TokenTTL)
-	go application.GRPCSrv.MustRun()
+	application := app.New(log, cfg.Server.Port, os.Getenv("DB_URL"), cfg.TokenTTL)
+	go application.HTTPServer.MustRun()
 
-	// TODO: Run gRPC server application
+	// TODO: setup database
+
+	// TODO: middleware
+
+	// TODO: setup handlers
+
+	// TODO: setup routes
 
 	// Graceful shutdown
 	stop := make(chan os.Signal, 1)
 	signal.Notify(stop, syscall.SIGTERM, syscall.SIGINT, os.Interrupt)
 	sign := <-stop
 	log.Info("Shutting down...", slog.String("signal", sign.String()))
-	application.GRPCSrv.Stop()
+	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
+	defer cancel()
+	application.HTTPServer.Stop(ctx)
+
 	log.Info("Shut down")
 	os.Exit(0)
 }
