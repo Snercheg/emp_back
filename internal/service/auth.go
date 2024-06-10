@@ -12,7 +12,7 @@ import (
 )
 
 type AuthService struct {
-	repo     storage.Repository
+	repo     storage.Authorization
 	log      *slog.Logger
 	tokenTTL time.Duration
 }
@@ -22,8 +22,9 @@ var (
 )
 
 func NewAuthService(
-	repo storage.Repository,
+	repo storage.Authorization,
 	log *slog.Logger,
+
 ) *AuthService {
 	return &AuthService{
 		log:  log,
@@ -78,4 +79,24 @@ func (s *AuthService) GenerateToken(email, password string) (string, error) {
 		return "", fmt.Errorf("%s: %w", op, err)
 	}
 	return token, nil
+}
+
+func (s *AuthService) ParseToken(token string) (int64, error) {
+	const op = "app.ParseToken"
+	log := s.log.With(
+		slog.String("op", op),
+		slog.String("token", token),
+	)
+	log.Info("Parsing token")
+	return jwt.ParseToken(token)
+}
+
+func (s *AuthService) IsAdmin(userId int64) (bool, error) {
+	const op = "app.IsAdmin"
+	log := s.log.With(
+		slog.String("op", op),
+		slog.Int64("userId", userId),
+	)
+	log.Info("Checking if user is admin")
+	return s.repo.IsAdmin(userId)
 }

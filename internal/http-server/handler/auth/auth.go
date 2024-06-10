@@ -73,12 +73,12 @@ func (a *Auth) Login(
 	password string,
 	appID int64,
 ) (token string, err error) {
-	const op = "auth.Login"
+	const op = "app.Login"
 
 	log := a.log.With(
 		slog.String("op", op),
 		slog.String("username", username),
-		slog.String("email", email), //Think about logging email
+		slog.String("email", email),
 	)
 
 	log.Info("Logging in")
@@ -114,14 +114,14 @@ func (a *Auth) Login(
 
 }
 
-// RegisterNewUser registers a new user and returns a user ID.
+// RegisterNewUser registers a new user and returns a user ModuleId.
 // if user exists, it returns an error.
 func (a *Auth) RegisterNewUser(ctx context.Context, username string, email string, password string) (uid int64, err error) {
-	const op = "auth.RegisterNewUser"
+	const op = "app.RegisterNewUser"
 
 	log := a.log.With(
 		slog.String("op", op),
-		slog.String("email", email), //Think about logging email
+		slog.String("email", email),
 	)
 
 	log.Info("Registering new user")
@@ -145,9 +145,9 @@ func (a *Auth) RegisterNewUser(ctx context.Context, username string, email strin
 	return id, nil
 }
 
-// IsAdmin checks if user with given username and password exists.
+// IsAdmin checks if user with given username and password is admin.
 func (a *Auth) IsAdmin(ctx context.Context, userID int64) (bool, error) {
-	const op = "auth.IsAdmin"
+	const op = "app.IsAdmin"
 	log := a.log.With(
 		slog.String("op", op),
 		slog.Int64("userID", userID),

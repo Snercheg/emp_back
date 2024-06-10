@@ -34,7 +34,7 @@ func (s *AuthPostgres) SaveUser(user models.User) (int64, error) {
 		return 0, fmt.Errorf("%s: %v", op, err)
 	}
 
-	// Return the ID of the inserted row
+	// Return the UserId of the inserted row
 	id, err := res.LastInsertId()
 	if err != nil {
 		return 0, fmt.Errorf("%s: %v", op, err)
@@ -44,7 +44,7 @@ func (s *AuthPostgres) SaveUser(user models.User) (int64, error) {
 
 // GetUser returns a user by email.
 func (s *AuthPostgres) GetUser(email string) (models.User, error) {
-	op := "storage.postgres.User"
+	op := "storage.repository.GetUser"
 	row := s.DB.QueryRow("SELECT id, username, email, pass_hash FROM users WHERE email = $1", email)
 	var u models.User
 	err := row.Scan(&u.ID, &u.Username, &u.Email, &u.PassHash)
@@ -55,4 +55,18 @@ func (s *AuthPostgres) GetUser(email string) (models.User, error) {
 		return u, fmt.Errorf("%s: %v", op, err)
 	}
 	return u, nil
+}
+
+func (s *AuthPostgres) IsAdmin(userId int64) (bool, error) {
+	op := "storage.repository.IsAdmin"
+	row := s.DB.QueryRow("SELECT is_admin FROM users WHERE id = $1", userId)
+	var isAdmin bool
+	err := row.Scan(&isAdmin)
+	if err != nil {
+		if errors.Is(err, sql.ErrNoRows) {
+			return isAdmin, ErrUserNotFound
+		}
+		return isAdmin, fmt.Errorf("%s: %v", op, err)
+	}
+	return isAdmin, nil
 }
