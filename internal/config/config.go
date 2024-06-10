@@ -8,23 +8,33 @@ import (
 )
 
 type Config struct {
-	Env         string        `json:"env" yaml:"env" mapstructure:"env" env-default:"local"`
-	StoragePath string        `json:"storagePath" yaml:"storagePath" mapstructure:"storagePath" env-required:"true"`
-	TokenTTL    time.Duration `json:"tokenTTL" yaml:"tokenTTL" mapstructure:"tokenTTL" env-required:"true"`
-	GRPC        GRPCConfig    `json:"grpc" yaml:"grpc" mapstructure:"grpc"`
+	Env string `json:"env" yaml:"env" mapstructure:"env" env-default:"local"`
+	//StoragePath string        `json:"storagePath" yaml:"storagePath" mapstructure:"storagePath" env-required:"true"`
+	TokenTTL time.Duration `json:"token_ttl" yaml:"token_ttl" mapstructure:"token_ttl" env-required:"true"`
+	Server   ServerConfig  `json:"server" yaml:"server" mapstructure:"server"`
+	//Database    Database      `json:"database" yaml:"database" mapstructure:"database"`
 }
 
 func NewConfig(env string) *Config {
 	return &Config{Env: env}
 }
 
-type GRPCConfig struct {
+type ServerConfig struct {
 	Port    int           `json:"port" yaml:"port" mapstructure:"port"`
 	Timeout time.Duration `json:"timeout" yaml:"timeout" mapstructure:"timeout" env-required:"true"`
 }
 
+/*
+	type Database struct {
+		Host     string `json:"host" yaml:"host" mapstructure:"host" env-required:"true"`
+		Port     string `json:"port" yaml:"port" mapstructure:"port" env-required:"true"`
+		User     string `json:"user" yaml:"user" mapstructure:"user" env-required:"true"`
+		Password string `json:"password" yaml:"password" mapstructure:"password" env-required:"true"`
+		Name     string `json:"name" yaml:"name" mapstructure:"name" env-required:"true"`
+	}
+*/
 func MustLoadConfig() Config {
-	path := fetchConfigPath("")
+	path := fetchConfigPath(os.Getenv("CONFIG_PATH"))
 	if path == "" {
 		panic("Config path is empty")
 	}
@@ -48,7 +58,6 @@ func MustLoadConfig() Config {
 // Default value is empty string.
 func fetchConfigPath(path string) string {
 	var res string
-
 	// --config=<path/to/config,yaml>
 	flag.StringVar(&res, "config", "", `Path to config file`)
 	flag.Parse()
