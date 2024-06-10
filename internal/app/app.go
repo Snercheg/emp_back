@@ -1,26 +1,40 @@
 package app
 
 import (
-	grpcapp "EMP_Back/internal/app/grpc"
+	httpapp "EMP_Back/internal/app/http"
+	"EMP_Back/internal/http-server/handler"
+	"EMP_Back/internal/service"
+	"EMP_Back/internal/storage"
 	"log/slog"
 	"time"
 )
 
 type App struct {
-	GRPCSrv *grpcapp.App
+	HTTPServer *httpapp.Server
 }
 
 func New(
 	log *slog.Logger,
-	grpcPort int,
-	storagePath string,
+	port int,
+	dbURL string,
 	tokenTTL time.Duration,
 ) *App {
 	// TODO init storage
-	// TODO init auth service
+	db, err := storage.New(storage.DBConfig{
+		DBUrl: dbURL,
+	})
+	if err != nil {
+		log.Error("Error in init storage", err)
+	}
+	repos := storage.NewRepository(db)
+	services := service.NewService(repos, log)
+	handlers := handler.NewHandler(services)
 
-	grpcApp := grpcapp.New(log, grpcPort)
+	// TODO init app service
+	// handlers := new(handler.Handler)
+
+	httpApp := httpapp.New(log, port, handlers.InitRoutes())
 	return &App{
-		GRPCSrv: grpcApp,
+		HTTPServer: httpApp,
 	}
 }
