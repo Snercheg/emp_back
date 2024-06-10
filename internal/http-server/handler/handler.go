@@ -24,7 +24,7 @@ func (h *Handler) InitRoutes() *gin.Engine {
 		auth.POST("/sign-in", h.SignIn)
 	}
 
-	api := router.Group("/api")
+	api := router.Group("/api", h.userIdentify)
 	{
 		plantFamily := api.Group("/plant-family")
 		{
@@ -34,13 +34,15 @@ func (h *Handler) InitRoutes() *gin.Engine {
 			plantFamily.PUT("/:id", h.UpdatePlantFamily)
 			plantFamily.DELETE("/:id", h.DeletePlantFamily)
 
-			recommendation := plantFamily.Group("/recommendation")
-			{
-				recommendation.POST("/", h.CreatePlantFamilyRecommendation)
-				recommendation.GET("/:recommendation_id", h.GetPlantFamilyRecommendation)
-				recommendation.PUT("/:recommendation_id", h.UpdatePlantFamilyRecommendation)
-				recommendation.DELETE("/:recommendation_id", h.DeletePlantFamilyRecommendation)
-			}
+		}
+		recommendation := api.Group("/recommendation")
+		{
+			recommendation.POST("/", h.CreateRecommendation)
+
+			recommendation.GET("/:recommendation_id", h.GetRecommendation)
+			recommendation.GET("/", h.GetRecommendations)
+			recommendation.PUT("/:recommendation_id", h.UpdateRecommendation)
+			recommendation.DELETE("/:recommendation_id", h.DeleteRecommendation)
 		}
 		module := api.Group("/module")
 		{
