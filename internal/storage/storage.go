@@ -7,6 +7,7 @@ var (
 	ErrUserNotFound                  = errors.New("user not found")
 	ErrAppNotFound                   = errors.New("app not found")
 	ErrModuleNotFound                = errors.New("module not found")
+	ErrModuleCannotBeChanged         = errors.New("cannot change module")
 	ErrModuleExist                   = errors.New("module exist")
 	ErrRecommendationNotFound        = errors.New("recommendation not found")
 	ErrRecommendationExist           = errors.New("recommendation exist")
