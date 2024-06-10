@@ -6,4 +6,4 @@ DROP TABLE IF EXISTS modules_users;
 DROP TABLE IF EXISTS recommendations;
 DROP TABLE IF EXISTS settings;
 DROP TABLE IF EXISTS plantFamily;
-DROP TABLE IF EXISTS deviceData;
+DROP TABLE IF EXISTS moduleData;
