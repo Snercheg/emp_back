@@ -27,12 +27,12 @@ func (s *ModuleDataPostgres) GetModuleData(moduleId int64, startDate, endDate ti
 	for rows.Next() {
 		err := rows.Scan(&moduleData.ModuleId, &moduleData.Temperature, &moduleData.HumidityIn, &moduleData.HumidityOut, &moduleData.Illuminance, &moduleData.MeasurementTime)
 		if err != nil {
-			return nil, fmt.Errorf("%s: %v", op, err)
+			return nil, fmt.Errorf("%s: %v", op, ErrDataNotFound)
 		}
 		moduleDataList = append(moduleDataList, moduleData)
 	}
 	if err := rows.Err(); err != nil {
-		return nil, fmt.Errorf("%s: %v", op, err)
+		return nil, fmt.Errorf("%s: %v", op, ErrDataNotFound)
 	}
 	return moduleDataList, nil
 

@@ -5,7 +5,6 @@ import "errors"
 var (
 	ErrUserExist                     = errors.New("user exist")
 	ErrUserNotFound                  = errors.New("user not found")
-	ErrAppNotFound                   = errors.New("app not found")
 	ErrModuleNotFound                = errors.New("module not found")
 	ErrModuleCannotBeChanged         = errors.New("cannot change module")
 	ErrModuleExist                   = errors.New("module exist")
@@ -15,8 +14,6 @@ var (
 	ErrPlantFamilyNotFound           = errors.New("plant family not found")
 	ErrPlantFamilyExist              = errors.New("plant family exist")
 	ErrPlantFamilyCannotBeChanged    = errors.New("cannot change plant family")
-	ErrUserModuleNotFound            = errors.New("user module not found")
-	ErrUserModuleExist               = errors.New("user module exist")
 	ErrSettingNotFound               = errors.New("setting not found")
 	ErrSettingExist                  = errors.New("setting exist")
 	ErrSettingCannotBeChanged        = errors.New("cannot change setting")

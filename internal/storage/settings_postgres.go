@@ -39,7 +39,7 @@ func (s *SettingsPostgres) GetSetting(moduleId int64) (*models.Setting, error) {
 	err := s.DB.QueryRow("SELECT * FROM settings WHERE module_id = $1", moduleId).Scan(&setting.ModuleId, &setting.ModuleId, &setting.Name, &setting.TemperatureMin, &setting.TemperatureMax, &setting.HumidityInMin, &setting.HumidityInMax, &setting.HumidityOutMin, &setting.HumidityOutMax, &setting.IlluminationMin, &setting.IlluminationMax)
 	if err != nil {
 		if errors.Is(err, sql.ErrNoRows) {
-			return nil, ErrRecommendationNotFound
+			return nil, ErrSettingNotFound
 		}
 		return nil, fmt.Errorf("%s: %v", op, err)
 	}
