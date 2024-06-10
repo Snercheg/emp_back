@@ -4,8 +4,7 @@ type User struct {
 	ID       int64
 	Username string
 	Email    string
-	PassHash []byte
+	PassHash string
 	Status   string
-	RoleId   int64
-	Role     *Role
+	IsAdmin  bool
 }
