@@ -6,7 +6,7 @@ tasks:
       - test
     desc: "test"
     cmds:
-    - go run cmd/auth/main.go --config=./config/local.yaml
+    - go run cmd/app/main.go --config=./config/local.yaml
   generate:
     aliases:
       - gen
