@@ -16,8 +16,8 @@ func NewSettingsPostgres(db *sql.DB) *SettingsPostgres {
 	return &SettingsPostgres{DB: db}
 }
 
-func (s *SettingsPostgres) SaveSettings(moduleId int64, settings *models.Setting) (int64, error) {
-	op := "storage.Settings.SaveSettings"
+func (s *SettingsPostgres) SaveSetting(moduleId int64, settings models.Setting) (int64, error) {
+	op := "storage.Settings.SaveSetting"
 	result, err := s.DB.Exec("INSERT INTO settings (module_id, name, temperature_min, temperature_max, humidity_in_min, humidity_in_max, humidity_out_min, humidity_out_max, illumination_min, illumination_max) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9)", moduleId, settings.Name, settings.TemperatureMin, settings.TemperatureMax, settings.HumidityInMin, settings.HumidityInMax, settings.HumidityOutMin, settings.HumidityOutMax, settings.IlluminationMin, settings.IlluminationMax)
 	if err != nil {
 		var pgErr *pgconn.PgError
@@ -46,7 +46,7 @@ func (s *SettingsPostgres) GetSetting(moduleId int64) (*models.Setting, error) {
 	return &setting, nil
 }
 
-func (s *SettingsPostgres) UpdateSetting(moduleId int64, setting *models.Setting) error {
+func (s *SettingsPostgres) UpdateSetting(moduleId int64, setting models.Setting) error {
 	op := "storage.Settings.UpdateSetting"
 	_, err := s.DB.Exec("UPDATE settings SET name = $1, temperature_min = $2, temperature_max = $3, humidity_in_min = $4, humidity_in_max = $5, humidity_out_min = $6, humidity_out_max = $7, illumination_min = $8, illumination_max = $9 WHERE module_id = $1", moduleId, setting.Name, setting.TemperatureMin, setting.TemperatureMax, setting.HumidityInMin, setting.HumidityInMax, setting.HumidityOutMin, setting.HumidityOutMax, setting.IlluminationMin, setting.IlluminationMax, moduleId)
 	if err != nil {
