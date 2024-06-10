@@ -10,21 +10,23 @@ import (
 )
 
 func main() {
-	var storagePath, migrationPath, migrationTable string
 
-	flag.StringVar(&storagePath, "storage", "", "Path to the storage file")
+	var host, port, name, user, password, migrationPath, migrationTable string
+
+	flag.StringVar(&host, "host", "127.0.0.1", "Host of the database")
+	flag.StringVar(&port, "port", "5432", "Port of the database")
+	flag.StringVar(&name, "name", "postgres", "Name of the database")
+	flag.StringVar(&user, "user", "postgres", "User of the database")
+	flag.StringVar(&password, "password", "postgres", "Password of the database")
 	flag.StringVar(&migrationPath, "migration", "", "Path to the migration files")
 	flag.StringVar(&migrationTable, "migration-table", "migrations", "Table name to store the migration history")
 	flag.Parse()
 
-	if storagePath == "" {
-		panic("storage path is required")
-	}
-	if migrationPath == "" {
-		panic("migration path is required")
+	if host == "" || port == "" || name == "" || user == "" || password == "" || migrationPath == "" || migrationTable == "" {
+		panic("host, port, name, user, password, migration-path and migration-table are required")
 	}
 
-	driverURL := fmt.Sprintf("postgres://%s:%s@%s:%s/%s", "postgres", "postgres", "127.0.0.1", "5432", "postgres")
+	driverURL := fmt.Sprintf("postgres://%s:%s@%s:%s/%s", user, password, host, port, name)
 	m, err := migrate.New(
 		"file://"+migrationPath,
 		driverURL,
