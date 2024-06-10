@@ -30,9 +30,6 @@ func New(
 	services := service.NewService(repos, log)
 	handlers := handler.NewHandler(services)
 
-	// TODO init app service
-	// handlers := new(handler.Handler)
-
 	httpApp := httpapp.New(log, port, handlers.InitRoutes())
 	return &App{
 		HTTPServer: httpApp,
