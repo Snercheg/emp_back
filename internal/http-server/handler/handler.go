@@ -24,27 +24,27 @@ func (h *Handler) InitRoutes() *gin.Engine {
 		auth.POST("/sign-in", h.SignIn)
 	}
 
-	api := router.Group("/api", h.userIdentify)
+	api := router.Group("/api")
 	{
 		plantFamily := api.Group("/plant-family")
 		{
 			plantFamily.GET("/", h.GetPlantFamily)
-			plantFamily.POST("/", h.CreatePlantFamily)
+			plantFamily.POST("/", h.CreatePlantFamily, h.checkIfUserIsAdmin)
 			plantFamily.GET("/:id", h.GetPlantFamily)
-			plantFamily.PUT("/:id", h.UpdatePlantFamily)
-			plantFamily.DELETE("/:id", h.DeletePlantFamily)
+			plantFamily.PUT("/:id", h.UpdatePlantFamily, h.checkIfUserIsAdmin)
+			plantFamily.DELETE("/:id", h.DeletePlantFamily, h.checkIfUserIsAdmin)
 
 		}
 		recommendation := api.Group("/recommendation")
 		{
-			recommendation.POST("/", h.CreateRecommendation)
+			recommendation.POST("/", h.CreateRecommendation, h.checkIfUserIsAdmin)
 
 			recommendation.GET("/:recommendation_id", h.GetRecommendation)
 			recommendation.GET("/", h.GetRecommendations)
-			recommendation.PUT("/:recommendation_id", h.UpdateRecommendation)
-			recommendation.DELETE("/:recommendation_id", h.DeleteRecommendation)
+			recommendation.PUT("/:recommendation_id", h.UpdateRecommendation, h.checkIfUserIsAdmin)
+			recommendation.DELETE("/:recommendation_id", h.DeleteRecommendation, h.checkIfUserIsAdmin)
 		}
-		module := api.Group("/module")
+		module := api.Group("/module", h.userIdentify)
 		{
 			module.GET("/", h.GetModules)
 			module.POST("/", h.CreateModule)
