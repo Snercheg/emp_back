@@ -4,12 +4,6 @@ tasks:
   test:
     aliases:
       - test
-    desc: "test"
+    desc: "run app"
     cmds:
     - go run cmd/app/main.go --config=./config/local.yaml
-  generate:
-    aliases:
-      - gen
-    desc: "Generate code from proto files"
-    cmds:
-      - protoc -I proto proto/sso/sso.proto --go_out=./gen/go --go_opt=paths=source_relative --go-grpc_out=./gen/go/ --go-grpc_opt=paths=source_relative
