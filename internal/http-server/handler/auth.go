@@ -7,6 +7,17 @@ import (
 	"net/http"
 )
 
+// @Summary SignUp
+// @Description create user account
+// @Tags Auth
+// @Accept json
+// @Produce json
+// @Param input body models.User true "User"
+// @Success 200 {object} response.Response
+// @Failure 400 {object} response.Response
+// @Failure 500 {object} response.Response
+// @Router /auth/signup [post]
+
 func (h *Handler) SignUp(c *gin.Context) {
 	var input models.User
 	if err := c.Bind(&input); err != nil {
@@ -25,6 +36,17 @@ type signInInput struct {
 	Email    string `json:"email" binding:"required"`
 	Password string `json:"password" binding:"required"`
 }
+
+// @Summary SignIn
+// @Description login user account
+// @Tags Auth
+// @Accept json
+// @Produce json
+// @Param input body signInInput true "User"
+// @Success 200 {object} response.Response
+// @Failure 400 {object} response.Response
+// @Failure 500 {object} response.Response
+// @Router /auth/signin [post]
 
 func (h *Handler) SignIn(c *gin.Context) {
 	var input = signInInput{}

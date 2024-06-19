@@ -3,6 +3,10 @@ package handler
 import (
 	"EMP_Back/internal/service"
 	"github.com/gin-gonic/gin"
+
+	//_ "emp_back/docs"
+	"github.com/swaggo/files"
+	"github.com/swaggo/gin-swagger"
 )
 
 type Handler struct {
@@ -17,6 +21,8 @@ func NewHandler(services *service.Service) *Handler {
 
 func (h *Handler) InitRoutes() *gin.Engine {
 	router := gin.New()
+
+	router.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerFiles.Handler))
 
 	auth := router.Group("/auth")
 	{
@@ -61,7 +67,7 @@ func (h *Handler) InitRoutes() *gin.Engine {
 			{
 				setting.GET("/", h.GetModuleSetting)
 				setting.POST("/", h.CreateModuleSetting)
-				setting.PUT("/:setting_id", h.UpdateModuleSetting)
+				setting.PUT("/", h.UpdateModuleSetting)
 			}
 		}
 	}

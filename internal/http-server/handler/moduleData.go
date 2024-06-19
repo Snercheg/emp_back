@@ -18,6 +18,16 @@ type getAllModuleDataResponse struct {
 	ModuleData []models.ModuleData `json:"module_data"`
 }
 
+// @Summary Create module data
+// @Description Create module data
+// @Tags ModuleData
+// @Accept  json
+// @Produce  json
+// @Param input body models.ModuleData true "Create module data"
+// @Success 201 {object} response.StatusSuccess
+// @Router /api/module/data [post]
+// @Security ApiKeyAuth
+
 func (h *Handler) CreateModuleData(c *gin.Context) {
 	var input models.ModuleData
 	if err := c.BindJSON(&input); err != nil {
@@ -32,6 +42,16 @@ func (h *Handler) CreateModuleData(c *gin.Context) {
 	c.JSON(http.StatusCreated, response.StatusSuccess)
 
 }
+
+// @Summary Get all module data
+// @Description Get all module data
+// @Tags ModuleData
+// @Accept  json
+// @Produce  json
+// @Param input body getModuleDataRequest true "Get all module data by date"
+// @Success 200 {object} getAllModuleDataResponse
+// @Router /api/module/data [get]
+// @Security ApiKeyAuth
 
 func (h *Handler) GetModuleData(c *gin.Context) {
 	moduleId, err := strconv.Atoi(c.Param("id"))

@@ -3,6 +3,8 @@ env: "local" # "prod/dev"
 server:
   port: 8000
   token_ttl: 1h
+  timeout: 1h
+token_ttl: 1h
 
 #database:
 #  host: "localhost"

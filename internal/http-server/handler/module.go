@@ -12,6 +12,18 @@ type getAllModulesResponse struct {
 	Modules []models.Module `json:"modules"`
 }
 
+// @Summary create module
+// @Tags module
+// @Accept  json
+// @Produce  json
+// @Param input body models.Module true "module"
+// @Success 201 {object} response.StatusSuccess
+// @Failure 400,404 {object} response.ErrorResponse
+// @Failure 500 {object} response.ErrorResponse
+// @Failure default {object} response.ErrorResponse
+// @Router api/module [post]
+// @Security ApiKeyAuth
+
 func (h *Handler) CreateModule(c *gin.Context) {
 	userID, err := h.getUserID(c)
 	if err != nil {
@@ -30,6 +42,17 @@ func (h *Handler) CreateModule(c *gin.Context) {
 	}
 	c.JSON(http.StatusCreated, map[string]interface{}{"id": id})
 }
+
+// @Summary get all modules
+// @Tags module
+// @Accept  json
+// @Produce  json
+// @Success 200 {object} getAllModulesResponse
+// @Failure 400,404 {object} response.ErrorResponse
+// @Failure 500 {object} response.ErrorResponse
+// @Failure default {object} response.ErrorResponse
+// @Router api/module [get]
+// @Security ApiKeyAuth
 
 func (h *Handler) GetModules(c *gin.Context) {
 	userID, err := h.getUserID(c)
@@ -50,6 +73,18 @@ func (h *Handler) GetModules(c *gin.Context) {
 	c.JSON(http.StatusOK, getAllModulesResponse{Modules: modules})
 }
 
+// @Summary get module by id
+// @Tags module
+// @Accept  json
+// @Produce  json
+// @Param id path int true "id"
+// @Success 200 {object} models.Module
+// @Failure 400,404 {object} response.ErrorResponse
+// @Failure 500 {object} response.ErrorResponse
+// @Failure default {object} response.ErrorResponse
+// @Router api/module/{id} [get]
+// @Security ApiKeyAuth
+
 func (h *Handler) GetModule(c *gin.Context) {
 	userID, err := h.getUserID(c)
 	if err != nil {
@@ -69,6 +104,19 @@ func (h *Handler) GetModule(c *gin.Context) {
 	}
 	c.JSON(http.StatusOK, module)
 }
+
+// @Summary update module
+// @Tags module
+// @Accept  json
+// @Produce  json
+// @Param id path int true "id"
+// @Param input body models.UpdateModuleInput true "module"
+// @Success 200 {object} response.StatusSuccess
+// @Failure 400,404 {object} response.ErrorResponse
+// @Failure 500 {object} response.ErrorResponse
+// @Failure default {object} response.ErrorResponse
+// @Router api/module/{id} [put]
+// @Security ApiKeyAuth
 
 func (h *Handler) UpdateModule(c *gin.Context) {
 	userID, err := h.getUserID(c)
@@ -93,6 +141,18 @@ func (h *Handler) UpdateModule(c *gin.Context) {
 	}
 	c.JSON(http.StatusOK, response.StatusSuccess)
 }
+
+// @Summary delete module
+// @Tags module
+// @Accept  json
+// @Produce  json
+// @Param id path int true "id"
+// @Success 200 {object} response.StatusSuccess
+// @Failure 400,404 {object} response.ErrorResponse
+// @Failure 500 {object} response.ErrorResponse
+// @Failure default {object} response.ErrorResponse
+// @Router api/module/{id} [delete]
+// @Security ApiKeyAuth
 
 func (h *Handler) DeleteModule(c *gin.Context) {
 	userID, err := h.getUserID(c)

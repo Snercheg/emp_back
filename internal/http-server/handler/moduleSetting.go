@@ -8,6 +8,18 @@ import (
 	"strconv"
 )
 
+// @Summary Get module setting
+// @Description Get module setting
+// @Tags Setting
+// @Accept  json
+// @Produce  json
+// @Success 200 {object} response.Response
+// @Failure 400 {object} response.Response
+// @Failure 500 {object} response.Response
+// @Failure default {object} response.ErrorResponse
+// @Router api/module/setting [get]
+// @Security ApiKeyAuth
+
 func (h *Handler) GetModuleSetting(c *gin.Context) {
 	moduleId, err := strconv.Atoi(c.Param("id"))
 	if err != nil {
@@ -29,6 +41,19 @@ func (h *Handler) GetModuleSetting(c *gin.Context) {
 
 }
 
+// @Summary Create module setting
+// @Description Create module setting
+// @Tags Setting
+// @Accept  json
+// @Produce  json
+// @Param input body models.Setting true "Create module setting"
+// @Success 201 {object} response.Response
+// @Failure 400 {object} response.Response
+// @Failure 500 {object} response.Response
+// @Failure default {object} response.ErrorResponse
+// @Router api/module/setting [post]
+// @Security ApiKeyAuth
+
 func (h *Handler) CreateModuleSetting(c *gin.Context) {
 	var input models.Setting
 	if err := c.BindJSON(&input); err != nil {
@@ -42,6 +67,19 @@ func (h *Handler) CreateModuleSetting(c *gin.Context) {
 	}
 	c.JSON(http.StatusCreated, map[string]interface{}{"id": id})
 }
+
+// @Summary Update module setting
+// @Description Update module setting
+// @Tags Setting
+// @Accept  json
+// @Produce  json
+// @Param input body models.Setting true "Update module setting"
+// @Success 200 {object} response.Response
+// @Failure 400 {object} response.Response
+// @Failure 500 {object} response.Response
+// @Failure default {object} response.ErrorResponse
+// @Router api/module/setting [put]
+// @Security ApiKeyAuth
 
 func (h *Handler) UpdateModuleSetting(c *gin.Context) {
 	id, err := strconv.Atoi(c.Param("id"))
