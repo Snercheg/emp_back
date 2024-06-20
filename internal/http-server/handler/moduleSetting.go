@@ -16,10 +16,9 @@ import (
 // @Success 200 {object} response.Response
 // @Failure 400 {object} response.Response
 // @Failure 500 {object} response.Response
-// @Failure default {object} response.ErrorResponse
-// @Router api/module/setting [get]
+// @Failure default {object} response.Response
+// @Router /api/module/setting [get]
 // @Security ApiKeyAuth
-
 func (h *Handler) GetModuleSetting(c *gin.Context) {
 	moduleId, err := strconv.Atoi(c.Param("id"))
 	if err != nil {
@@ -50,10 +49,9 @@ func (h *Handler) GetModuleSetting(c *gin.Context) {
 // @Success 201 {object} response.Response
 // @Failure 400 {object} response.Response
 // @Failure 500 {object} response.Response
-// @Failure default {object} response.ErrorResponse
-// @Router api/module/setting [post]
+// @Failure default {object} response.Response
+// @Router /api/module/setting [post]
 // @Security ApiKeyAuth
-
 func (h *Handler) CreateModuleSetting(c *gin.Context) {
 	var input models.Setting
 	if err := c.BindJSON(&input); err != nil {
@@ -77,10 +75,9 @@ func (h *Handler) CreateModuleSetting(c *gin.Context) {
 // @Success 200 {object} response.Response
 // @Failure 400 {object} response.Response
 // @Failure 500 {object} response.Response
-// @Failure default {object} response.ErrorResponse
-// @Router api/module/setting [put]
+// @Failure default {object} response.Response
+// @Router /api/module/setting [put]
 // @Security ApiKeyAuth
-
 func (h *Handler) UpdateModuleSetting(c *gin.Context) {
 	id, err := strconv.Atoi(c.Param("id"))
 	if err != nil {

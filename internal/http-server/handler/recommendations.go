@@ -18,13 +18,12 @@ type getAllRecommendationsResponse struct {
 // @Accept  json
 // @Produce  json
 // @Param input body models.Recommendation true "Create a new recommendation"
-// @Success 201 {object} response.StatusSuccess
-// @Failure 400,404 {object} response.ErrorResponse
-// @Failure 500 {object} response.ErrorResponse
-// @Failure default {object} response.ErrorResponse
-// @Router api/recommendation [post]
+// @Success 201 {object} response.Response
+// @Failure 400,404 {object} response.Response
+// @Failure 500 {object} response.Response
+// @Failure default {object} response.Response
+// @Router /api/recommendation [post]
 // @Security ApiKeyAuth
-
 func (h *Handler) CreateRecommendation(c *gin.Context) {
 	var input models.Recommendation
 	if err := c.BindJSON(&input); err != nil {
@@ -47,12 +46,11 @@ func (h *Handler) CreateRecommendation(c *gin.Context) {
 // @Produce  json
 // @Param id path int true "Recommendation id"
 // @Success 200 {object} models.Recommendation
-// @Failure 400,404 {object} response.ErrorResponse
-// @Failure 500 {object} response.ErrorResponse
-// @Failure default {object} response.ErrorResponse
-// @Router api/recommendation/{id} [get]
+// @Failure 400,404 {object} response.Response
+// @Failure 500 {object} response.Response
+// @Failure default {object} response.Response
+// @Router /api/recommendation/{id} [get]
 // @Security ApiKeyAuth
-
 func (h *Handler) GetRecommendation(c *gin.Context) {
 	id, err := strconv.Atoi(c.Param("id"))
 	if err != nil {
@@ -74,13 +72,12 @@ func (h *Handler) GetRecommendation(c *gin.Context) {
 // @Produce  json
 // @Param id path int true "Recommendation id"
 // @Param input body models.Recommendation true "Update a recommendation"
-// @Success 200 {object} response.StatusSuccess
-// @Failure 400,404 {object} response.ErrorResponse
-// @Failure 500 {object} response.ErrorResponse
-// @Failure default {object} response.ErrorResponse
-// @Router api/recommendation/{id} [put]
+// @Success 200 {object} response.Response
+// @Failure 400,404 {object} response.Response
+// @Failure 500 {object} response.Response
+// @Failure default {object} response.Response
+// @Router /api/recommendation/{id} [put]
 // @Security ApiKeyAuth
-
 func (h *Handler) UpdateRecommendation(c *gin.Context) {
 	id, err := strconv.Atoi(c.Param("id"))
 	if err != nil {
@@ -107,13 +104,12 @@ func (h *Handler) UpdateRecommendation(c *gin.Context) {
 // @Accept  json
 // @Produce  json
 // @Param id path int true "Recommendation id"
-// @Success 200 {object} response.StatusSuccess
-// @Failure 400,404 {object} response.ErrorResponse
-// @Failure 500 {object} response.ErrorResponse
-// @Failure default {object} response.ErrorResponse
-// @Router api/recommendation/{id} [delete]
+// @Success 200 {object} response.Response
+// @Failure 400,404 {object} response.Response
+// @Failure 500 {object} response.Response
+// @Failure default {object} response.Response
+// @Router /api/recommendation/{id} [delete]
 // @Security ApiKeyAuth
-
 func (h *Handler) DeleteRecommendation(c *gin.Context) {
 	id, err := strconv.Atoi(c.Param("id"))
 	if err != nil {
@@ -135,12 +131,11 @@ func (h *Handler) DeleteRecommendation(c *gin.Context) {
 // @Accept  json
 // @Produce  json
 // @Success 200 {object} getAllRecommendationsResponse
-// @Failure 400,404 {object} response.ErrorResponse
-// @Failure 500 {object} response.ErrorResponse
-// @Failure default {object} response.ErrorResponse
-// @Router api/recommendation [get]
+// @Failure 400,404 {object} response.Response
+// @Failure 500 {object} response.Response
+// @Failure default {object} response.Response
+// @Router /api/recommendation [get]
 // @Security ApiKeyAuth
-
 func (h *Handler) GetRecommendations(c *gin.Context) {
 	recommendations, err := h.services.GetRecommendations()
 	if err != nil {

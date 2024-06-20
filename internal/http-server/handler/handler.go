@@ -4,7 +4,7 @@ import (
 	"EMP_Back/internal/service"
 	"github.com/gin-gonic/gin"
 
-	//_ "emp_back/docs"
+	_ "EMP_Back/docs"
 	"github.com/swaggo/files"
 	"github.com/swaggo/gin-swagger"
 )

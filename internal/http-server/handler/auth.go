@@ -17,7 +17,6 @@ import (
 // @Failure 400 {object} response.Response
 // @Failure 500 {object} response.Response
 // @Router /auth/signup [post]
-
 func (h *Handler) SignUp(c *gin.Context) {
 	var input models.User
 	if err := c.Bind(&input); err != nil {
@@ -47,7 +46,6 @@ type signInInput struct {
 // @Failure 400 {object} response.Response
 // @Failure 500 {object} response.Response
 // @Router /auth/signin [post]
-
 func (h *Handler) SignIn(c *gin.Context) {
 	var input = signInInput{}
 	if err := c.Bind(&input); err != nil {
