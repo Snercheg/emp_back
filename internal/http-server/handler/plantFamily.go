@@ -13,6 +13,7 @@ type getAllPlantFamiliesResponse struct {
 }
 
 // @Summary Get all plant families
+// @Security ApiKeyAuth
 // @Description Get all plant families
 // @Tags PlantFamily
 // @Accept  json
@@ -22,7 +23,6 @@ type getAllPlantFamiliesResponse struct {
 // @Failure 500 {object} response.Response
 // @Failure default {object} response.Response
 // @Router /api/plant-family [get]
-// @Security ApiKeyAuth
 func (h *Handler) GetPlantFamilies(c *gin.Context) {
 	plantFamilies, err := h.services.GetPlantFamilies()
 	if err != nil {
@@ -33,6 +33,7 @@ func (h *Handler) GetPlantFamilies(c *gin.Context) {
 }
 
 // @Summary Create a new plant family
+// @Security ApiKeyAuth
 // @Description Create a new plant family
 // @Tags PlantFamily
 // @Accept  json
@@ -43,7 +44,6 @@ func (h *Handler) GetPlantFamilies(c *gin.Context) {
 // @Failure 500 {object} response.Response
 // @Failure default {object} response.Response
 // @Router /api/plant-family [post]
-// @Security ApiKeyAuth
 func (h *Handler) CreatePlantFamily(c *gin.Context) {
 	var input models.PlantFamily
 	if err := c.BindJSON(&input); err != nil {
@@ -59,6 +59,7 @@ func (h *Handler) CreatePlantFamily(c *gin.Context) {
 }
 
 // @Summary Get plant family by id
+// @Security ApiKeyAuth
 // @Description Get plant family by id
 // @Tags PlantFamily
 // @Accept  json
@@ -69,7 +70,6 @@ func (h *Handler) CreatePlantFamily(c *gin.Context) {
 // @Failure 500 {object} response.Response
 // @Failure default {object} response.Response
 // @Router /api/plant-family/{id} [get]
-// @Security ApiKeyAuth
 func (h *Handler) GetPlantFamily(c *gin.Context) {
 	id, err := strconv.Atoi(c.Param("id"))
 	if err != nil {
@@ -86,6 +86,7 @@ func (h *Handler) GetPlantFamily(c *gin.Context) {
 }
 
 // @Summary Update plant family by id
+// @Security ApiKeyAuth
 // @Description Update plant family by id
 // @Tags PlantFamily
 // @Accept  json
@@ -97,7 +98,6 @@ func (h *Handler) GetPlantFamily(c *gin.Context) {
 // @Failure 500 {object} response.Response
 // @Failure default {object} response.Response
 // @Router /api/plant-family/{id} [put]
-// @Security ApiKeyAuth
 func (h *Handler) UpdatePlantFamily(c *gin.Context) {
 	id, err := strconv.Atoi(c.Param("id"))
 	if err != nil {
@@ -120,6 +120,7 @@ func (h *Handler) UpdatePlantFamily(c *gin.Context) {
 }
 
 // @Summary Delete plant family by id
+// @Security ApiKeyAuth
 // @Description Delete plant family by id
 // @Tags PlantFamily
 // @Accept  json
@@ -130,7 +131,6 @@ func (h *Handler) UpdatePlantFamily(c *gin.Context) {
 // @Failure 500 {object} response.Response
 // @Failure default {object} response.Response
 // @Router /api/plant-family/{id} [delete]
-// @Security ApiKeyAuth
 func (h *Handler) DeletePlantFamily(c *gin.Context) {
 	id, err := strconv.Atoi(c.Param("id"))
 	if err != nil {

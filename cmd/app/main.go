@@ -13,6 +13,12 @@ import (
 	"time"
 )
 
+const (
+	envLocal = "local"
+	envDev   = "dev"
+	envProd  = "prod"
+)
+
 // @title EMP Back
 // @version 1.0.0
 // @description API Server for EMP backend application
@@ -20,15 +26,9 @@ import (
 // @host localhost:8000
 // @BasePath /
 
-//@ securityDefinitions.apikey ApiKeyAuth
+// @securityDefinitions.apikey ApiKeyAuth
 // @in header
 // @name Authorization
-
-const (
-	envLocal = "local"
-	envDev   = "dev"
-	envProd  = "prod"
-)
 
 func main() {
 	// TODO: Change config delete console

@@ -13,6 +13,7 @@ type getAllModulesResponse struct {
 }
 
 // @Summary create module
+// @Security ApiKeyAuth
 // @Tags module
 // @Accept  json
 // @Produce  json
@@ -22,7 +23,6 @@ type getAllModulesResponse struct {
 // @Failure 500 {object} response.Response
 // @Failure default {object} response.Response
 // @Router /api/module [post]
-// @Security ApiKeyAuth
 func (h *Handler) CreateModule(c *gin.Context) {
 	userID, err := h.getUserID(c)
 	if err != nil {
@@ -43,6 +43,7 @@ func (h *Handler) CreateModule(c *gin.Context) {
 }
 
 // @Summary get all modules
+// @Security ApiKeyAuth
 // @Tags module
 // @Accept  json
 // @Produce  json
@@ -51,7 +52,6 @@ func (h *Handler) CreateModule(c *gin.Context) {
 // @Failure 500 {object} response.Response
 // @Failure default {object} response.Response
 // @Router /api/module [get]
-// @Security ApiKeyAuth
 func (h *Handler) GetModules(c *gin.Context) {
 	userID, err := h.getUserID(c)
 	if err != nil {
@@ -72,6 +72,7 @@ func (h *Handler) GetModules(c *gin.Context) {
 }
 
 // @Summary get module by id
+// @Security ApiKeyAuth
 // @Tags module
 // @Accept  json
 // @Produce  json
@@ -81,7 +82,6 @@ func (h *Handler) GetModules(c *gin.Context) {
 // @Failure 500 {object} response.Response
 // @Failure default {object} response.Response
 // @Router /api/module/{id} [get]
-// @Security ApiKeyAuth
 func (h *Handler) GetModule(c *gin.Context) {
 	userID, err := h.getUserID(c)
 	if err != nil {
@@ -103,6 +103,7 @@ func (h *Handler) GetModule(c *gin.Context) {
 }
 
 // @Summary update module
+// @Security ApiKeyAuth
 // @Tags module
 // @Accept  json
 // @Produce  json
@@ -113,7 +114,6 @@ func (h *Handler) GetModule(c *gin.Context) {
 // @Failure 500 {object} response.Response
 // @Failure default {object} response.Response
 // @Router /api/module/{id} [put]
-// @Security ApiKeyAuth
 func (h *Handler) UpdateModule(c *gin.Context) {
 	userID, err := h.getUserID(c)
 	if err != nil {
@@ -139,6 +139,7 @@ func (h *Handler) UpdateModule(c *gin.Context) {
 }
 
 // @Summary delete module
+// @Security ApiKeyAuth
 // @Tags module
 // @Accept  json
 // @Produce  json
@@ -148,7 +149,6 @@ func (h *Handler) UpdateModule(c *gin.Context) {
 // @Failure 500 {object} response.Response
 // @Failure default {object} response.Response
 // @Router /api/module/{id} [delete]
-// @Security ApiKeyAuth
 func (h *Handler) DeleteModule(c *gin.Context) {
 	userID, err := h.getUserID(c)
 	if err != nil {

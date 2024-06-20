@@ -19,6 +19,7 @@ type getAllModuleDataResponse struct {
 }
 
 // @Summary Create module data
+// @Security ApiKeyAuth
 // @Description Create module data
 // @Tags ModuleData
 // @Accept  json
@@ -26,7 +27,6 @@ type getAllModuleDataResponse struct {
 // @Param input body models.ModuleData true "Create module data"
 // @Success 201 {object} response.Response
 // @Router /api/module/data [post]
-// @Security ApiKeyAuth
 func (h *Handler) CreateModuleData(c *gin.Context) {
 	var input models.ModuleData
 	if err := c.BindJSON(&input); err != nil {
@@ -43,6 +43,7 @@ func (h *Handler) CreateModuleData(c *gin.Context) {
 }
 
 // @Summary Get all module data
+// @Security ApiKeyAuth
 // @Description Get all module data
 // @Tags ModuleData
 // @Accept  json
@@ -50,7 +51,6 @@ func (h *Handler) CreateModuleData(c *gin.Context) {
 // @Param input body getModuleDataRequest true "Get all module data by date"
 // @Success 200 {object} getAllModuleDataResponse
 // @Router /api/module/data [get]
-// @Security ApiKeyAuth
 func (h *Handler) GetModuleData(c *gin.Context) {
 	moduleId, err := strconv.Atoi(c.Param("id"))
 	if err != nil {

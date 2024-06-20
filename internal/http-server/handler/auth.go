@@ -8,8 +8,9 @@ import (
 )
 
 // @Summary SignUp
-// @Description create user account
 // @Tags Auth
+// @Description create user account
+// @ID create-account
 // @Accept json
 // @Produce json
 // @Param input body models.User true "User"
@@ -37,8 +38,9 @@ type signInInput struct {
 }
 
 // @Summary SignIn
-// @Description login user account
 // @Tags Auth
+// @Description login user account
+// @ID login
 // @Accept json
 // @Produce json
 // @Param input body signInInput true "User"

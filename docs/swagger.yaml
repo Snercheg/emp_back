@@ -1,0 +1,959 @@
+basePath: /
+definitions:
+  handler.getAllModuleDataResponse:
+    properties:
+      module_data:
+        items:
+          $ref: '#/definitions/models.ModuleData'
+        type: array
+    type: object
+  handler.getAllModulesResponse:
+    properties:
+      modules:
+        items:
+          $ref: '#/definitions/models.Module'
+        type: array
+    type: object
+  handler.getAllPlantFamiliesResponse:
+    properties:
+      plant_family:
+        items:
+          $ref: '#/definitions/models.PlantFamily'
+        type: array
+    type: object
+  handler.getAllRecommendationsResponse:
+    properties:
+      recommendations:
+        items:
+          $ref: '#/definitions/models.Recommendation'
+        type: array
+    type: object
+  handler.getModuleDataRequest:
+    type: object
+  handler.signInInput:
+    properties:
+      email:
+        type: string
+      password:
+        type: string
+    required:
+    - email
+    - password
+    type: object
+  models.Module:
+    properties:
+      id:
+        type: integer
+      name:
+        type: string
+      plant_family:
+        $ref: '#/definitions/models.PlantFamily'
+      plant_family_id:
+        type: integer
+      status:
+        type: string
+    required:
+    - name
+    type: object
+  models.ModuleData:
+    properties:
+      humidity_in:
+        type: number
+      humidity_out:
+        type: number
+      illuminance:
+        type: number
+      measurement_time:
+        type: string
+      module_id:
+        type: integer
+      temperature:
+        type: number
+    type: object
+  models.PlantFamily:
+    properties:
+      description:
+        type: string
+      id:
+        type: integer
+      name:
+        type: string
+      picture_url:
+        type: string
+      recommendation:
+        $ref: '#/definitions/models.Recommendation'
+      recommendation_id:
+        type: integer
+    type: object
+  models.Recommendation:
+    properties:
+      description:
+        type: string
+      humidity_in_max:
+        type: number
+      humidity_in_min:
+        type: number
+      humidity_out_max:
+        type: number
+      humidity_out_min:
+        type: number
+      id:
+        type: integer
+      illuminance_max:
+        type: number
+      illuminance_min:
+        type: number
+      temperature_max:
+        type: number
+      temperature_min:
+        type: number
+      title:
+        type: string
+    type: object
+  models.Setting:
+    properties:
+      humidity_in_max:
+        type: number
+      humidity_in_min:
+        type: number
+      humidity_out_max:
+        type: number
+      humidity_out_min:
+        type: number
+      illumination_max:
+        type: number
+      illumination_min:
+        type: number
+      module_id:
+        type: integer
+      name:
+        type: string
+      temperature_max:
+        type: number
+      temperature_min:
+        type: number
+    type: object
+  models.UpdateModuleInput:
+    properties:
+      name:
+        type: string
+      plant_family_id:
+        type: integer
+    type: object
+  models.User:
+    properties:
+      email:
+        type: string
+      id:
+        type: integer
+      isAdmin:
+        type: boolean
+      passHash:
+        type: string
+      status:
+        type: string
+      username:
+        type: string
+    type: object
+  response.Response:
+    properties:
+      error:
+        type: string
+      status:
+        type: string
+    type: object
+host: localhost:8000
+info:
+  contact: {}
+  description: API Server for EMP backend application
+  title: EMP Back
+  version: 1.0.0
+paths:
+  /api/module:
+    get:
+      consumes:
+      - application/json
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/handler.getAllModulesResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/response.Response'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/response.Response'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/response.Response'
+        default:
+          description: ""
+          schema:
+            $ref: '#/definitions/response.Response'
+      security:
+      - ApiKeyAuth: []
+      summary: get all modules
+      tags:
+      - module
+    post:
+      consumes:
+      - application/json
+      parameters:
+      - description: module
+        in: body
+        name: input
+        required: true
+        schema:
+          $ref: '#/definitions/models.Module'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            $ref: '#/definitions/response.Response'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/response.Response'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/response.Response'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/response.Response'
+        default:
+          description: ""
+          schema:
+            $ref: '#/definitions/response.Response'
+      security:
+      - ApiKeyAuth: []
+      summary: create module
+      tags:
+      - module
+  /api/module/{id}:
+    delete:
+      consumes:
+      - application/json
+      parameters:
+      - description: id
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/response.Response'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/response.Response'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/response.Response'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/response.Response'
+        default:
+          description: ""
+          schema:
+            $ref: '#/definitions/response.Response'
+      security:
+      - ApiKeyAuth: []
+      summary: delete module
+      tags:
+      - module
+    get:
+      consumes:
+      - application/json
+      parameters:
+      - description: id
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.Module'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/response.Response'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/response.Response'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/response.Response'
+        default:
+          description: ""
+          schema:
+            $ref: '#/definitions/response.Response'
+      security:
+      - ApiKeyAuth: []
+      summary: get module by id
+      tags:
+      - module
+    put:
+      consumes:
+      - application/json
+      parameters:
+      - description: id
+        in: path
+        name: id
+        required: true
+        type: integer
+      - description: module
+        in: body
+        name: input
+        required: true
+        schema:
+          $ref: '#/definitions/models.UpdateModuleInput'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/response.Response'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/response.Response'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/response.Response'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/response.Response'
+        default:
+          description: ""
+          schema:
+            $ref: '#/definitions/response.Response'
+      security:
+      - ApiKeyAuth: []
+      summary: update module
+      tags:
+      - module
+  /api/module/data:
+    get:
+      consumes:
+      - application/json
+      description: Get all module data
+      parameters:
+      - description: Get all module data by date
+        in: body
+        name: input
+        required: true
+        schema:
+          $ref: '#/definitions/handler.getModuleDataRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/handler.getAllModuleDataResponse'
+      security:
+      - ApiKeyAuth: []
+      summary: Get all module data
+      tags:
+      - ModuleData
+    post:
+      consumes:
+      - application/json
+      description: Create module data
+      parameters:
+      - description: Create module data
+        in: body
+        name: input
+        required: true
+        schema:
+          $ref: '#/definitions/models.ModuleData'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            $ref: '#/definitions/response.Response'
+      security:
+      - ApiKeyAuth: []
+      summary: Create module data
+      tags:
+      - ModuleData
+  /api/module/setting:
+    get:
+      consumes:
+      - application/json
+      description: Get module setting
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/response.Response'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/response.Response'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/response.Response'
+        default:
+          description: ""
+          schema:
+            $ref: '#/definitions/response.Response'
+      security:
+      - ApiKeyAuth: []
+      summary: Get module setting
+      tags:
+      - Setting
+    post:
+      consumes:
+      - application/json
+      description: Create module setting
+      parameters:
+      - description: Create module setting
+        in: body
+        name: input
+        required: true
+        schema:
+          $ref: '#/definitions/models.Setting'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            $ref: '#/definitions/response.Response'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/response.Response'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/response.Response'
+        default:
+          description: ""
+          schema:
+            $ref: '#/definitions/response.Response'
+      security:
+      - ApiKeyAuth: []
+      summary: Create module setting
+      tags:
+      - Setting
+    put:
+      consumes:
+      - application/json
+      description: Update module setting
+      parameters:
+      - description: Update module setting
+        in: body
+        name: input
+        required: true
+        schema:
+          $ref: '#/definitions/models.Setting'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/response.Response'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/response.Response'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/response.Response'
+        default:
+          description: ""
+          schema:
+            $ref: '#/definitions/response.Response'
+      security:
+      - ApiKeyAuth: []
+      summary: Update module setting
+      tags:
+      - Setting
+  /api/plant-family:
+    get:
+      consumes:
+      - application/json
+      description: Get all plant families
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/handler.getAllPlantFamiliesResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/response.Response'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/response.Response'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/response.Response'
+        default:
+          description: ""
+          schema:
+            $ref: '#/definitions/response.Response'
+      security:
+      - ApiKeyAuth: []
+      summary: Get all plant families
+      tags:
+      - PlantFamily
+    post:
+      consumes:
+      - application/json
+      description: Create a new plant family
+      parameters:
+      - description: Plant Family
+        in: body
+        name: input
+        required: true
+        schema:
+          $ref: '#/definitions/models.PlantFamily'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            $ref: '#/definitions/response.Response'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/response.Response'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/response.Response'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/response.Response'
+        default:
+          description: ""
+          schema:
+            $ref: '#/definitions/response.Response'
+      security:
+      - ApiKeyAuth: []
+      summary: Create a new plant family
+      tags:
+      - PlantFamily
+  /api/plant-family/{id}:
+    delete:
+      consumes:
+      - application/json
+      description: Delete plant family by id
+      parameters:
+      - description: Plant Family ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/response.Response'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/response.Response'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/response.Response'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/response.Response'
+        default:
+          description: ""
+          schema:
+            $ref: '#/definitions/response.Response'
+      security:
+      - ApiKeyAuth: []
+      summary: Delete plant family by id
+      tags:
+      - PlantFamily
+    get:
+      consumes:
+      - application/json
+      description: Get plant family by id
+      parameters:
+      - description: Plant Family ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.PlantFamily'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/response.Response'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/response.Response'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/response.Response'
+        default:
+          description: ""
+          schema:
+            $ref: '#/definitions/response.Response'
+      security:
+      - ApiKeyAuth: []
+      summary: Get plant family by id
+      tags:
+      - PlantFamily
+    put:
+      consumes:
+      - application/json
+      description: Update plant family by id
+      parameters:
+      - description: Plant Family ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      - description: Plant Family
+        in: body
+        name: input
+        required: true
+        schema:
+          $ref: '#/definitions/models.PlantFamily'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/response.Response'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/response.Response'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/response.Response'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/response.Response'
+        default:
+          description: ""
+          schema:
+            $ref: '#/definitions/response.Response'
+      security:
+      - ApiKeyAuth: []
+      summary: Update plant family by id
+      tags:
+      - PlantFamily
+  /api/recommendation:
+    get:
+      consumes:
+      - application/json
+      description: Get all recommendations
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/handler.getAllRecommendationsResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/response.Response'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/response.Response'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/response.Response'
+        default:
+          description: ""
+          schema:
+            $ref: '#/definitions/response.Response'
+      security:
+      - ApiKeyAuth: []
+      summary: Get all recommendations
+      tags:
+      - Recommendation
+    post:
+      consumes:
+      - application/json
+      description: Create a new recommendation
+      parameters:
+      - description: Create a new recommendation
+        in: body
+        name: input
+        required: true
+        schema:
+          $ref: '#/definitions/models.Recommendation'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            $ref: '#/definitions/response.Response'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/response.Response'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/response.Response'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/response.Response'
+        default:
+          description: ""
+          schema:
+            $ref: '#/definitions/response.Response'
+      security:
+      - ApiKeyAuth: []
+      summary: Create a new recommendation
+      tags:
+      - Recommendation
+  /api/recommendation/{id}:
+    delete:
+      consumes:
+      - application/json
+      description: Delete a recommendation
+      parameters:
+      - description: Recommendation id
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/response.Response'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/response.Response'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/response.Response'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/response.Response'
+        default:
+          description: ""
+          schema:
+            $ref: '#/definitions/response.Response'
+      security:
+      - ApiKeyAuth: []
+      summary: Delete a recommendation
+      tags:
+      - Recommendation
+    get:
+      consumes:
+      - application/json
+      description: Get a recommendation
+      parameters:
+      - description: Recommendation id
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.Recommendation'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/response.Response'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/response.Response'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/response.Response'
+        default:
+          description: ""
+          schema:
+            $ref: '#/definitions/response.Response'
+      security:
+      - ApiKeyAuth: []
+      summary: Get a recommendation
+      tags:
+      - Recommendation
+    put:
+      consumes:
+      - application/json
+      description: Update a recommendation
+      parameters:
+      - description: Recommendation id
+        in: path
+        name: id
+        required: true
+        type: integer
+      - description: Update a recommendation
+        in: body
+        name: input
+        required: true
+        schema:
+          $ref: '#/definitions/models.Recommendation'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/response.Response'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/response.Response'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/response.Response'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/response.Response'
+        default:
+          description: ""
+          schema:
+            $ref: '#/definitions/response.Response'
+      security:
+      - ApiKeyAuth: []
+      summary: Update a recommendation
+      tags:
+      - Recommendation
+  /auth/signin:
+    post:
+      consumes:
+      - application/json
+      description: login user account
+      operationId: login
+      parameters:
+      - description: User
+        in: body
+        name: input
+        required: true
+        schema:
+          $ref: '#/definitions/handler.signInInput'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/response.Response'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/response.Response'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/response.Response'
+      summary: SignIn
+      tags:
+      - Auth
+  /auth/signup:
+    post:
+      consumes:
+      - application/json
+      description: create user account
+      operationId: create-account
+      parameters:
+      - description: User
+        in: body
+        name: input
+        required: true
+        schema:
+          $ref: '#/definitions/models.User'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/response.Response'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/response.Response'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/response.Response'
+      summary: SignUp
+      tags:
+      - Auth
+securityDefinitions:
+  ApiKeyAuth:
+    in: header
+    name: Authorization
+    type: apiKey
+swagger: "2.0"
